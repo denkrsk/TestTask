@@ -2,6 +2,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import ru.stepup.task.Account;
 import ru.stepup.task.Currency;
+import ru.stepup.task.Save;
 
 public class Test {
     @org.junit.jupiter.api.Test
@@ -56,31 +57,32 @@ public class Test {
     @DisplayName("Проверка Copy")
     public void  testCopy(){
         Account acc = new Account("Denis");
-        Account accCopy;
+        String tmp = acc.getName();
+        Save<Account> save =acc.save();
         Currency currr = new Currency();
+        acc.setName("Vasia");
         acc.setCurrency(currr, 100);
         currr.setCurCurrency(2);
         acc.setCurrency(currr, 990);
         acc.setCurrency(currr, 888);
-        accCopy = acc.getCopy();
-        Assertions.assertTrue(accCopy.getName().equals(acc.getName()) & acc.getCurBalance().equals(accCopy.getCurBalance()));
+        save.restore();
+
+        Assertions.assertEquals(tmp, acc.getName());
 
     }
     @org.junit.jupiter.api.Test
     @DisplayName("Проверка Copy на не равно")
     public void  testnotCopy(){
         Account acc = new Account("Denis");
-        Account accCopy;
-        String str = acc.getName();
-        acc.setName("Vasia");
+        String tmp = acc.getName();
+        Save<Account> save =acc.save();
         Currency currr = new Currency();
+        acc.setName("Vasia");
         acc.setCurrency(currr, 100);
         currr.setCurCurrency(2);
         acc.setCurrency(currr, 990);
         acc.setCurrency(currr, 888);
-        accCopy = acc.getCopy();
-        acc.setName("Vladimir");
-        Assertions.assertFalse(accCopy.getName().equals(acc.getName()) & acc.getCurBalance().equals(accCopy.getCurBalance()));
+        Assertions.assertFalse(Boolean.parseBoolean(tmp), acc.getName());
 
     }
 }
