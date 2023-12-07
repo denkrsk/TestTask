@@ -1,12 +1,14 @@
 package ru.stepup.task;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Stack;
 
 public class Account {
     private String name;
     private HashMap<String, Integer> curBalance = new HashMap<>();
-    private Stack<String> stUndo = new Stack<>();
+    private Deque<Action> stUndo = new ArrayDeque<>();
 
     public Account(String name) {
         setName(name);
@@ -18,9 +20,9 @@ public class Account {
 
     public void setName(String name) {
         if (name == null | name.equals("")) throw new IllegalArgumentException("Имя не может быть пустым.");
-
-            stUndo.push("name " + this.name);
-            this.name = name;
+        String oldName = this.name;
+        stUndo.push(()->this.name = oldName);
+        this.name = name;
 
     }
 
@@ -31,31 +33,18 @@ public class Account {
     public void setCurrency(Currency nameCur, Integer bal) {
 
         if (bal < 0) throw new IllegalArgumentException("Баланс валюты не может быть отрицательным.");
-            if (curBalance.containsKey(nameCur.curCurrency))
-                stUndo.push("set " + nameCur.curCurrency + " " + this.curBalance.get(nameCur.curCurrency));
-            else stUndo.push("remove " + nameCur.curCurrency);
-            this.curBalance.put(nameCur.curCurrency, bal);
-    }
-    public void undo() {
-        String[] arr = stUndo.pop().split(" ");
-        if (stUndo.isEmpty()) throw new IndexOutOfBoundsException("Нет изменений для отмены.");
-        if (arr.length > 0) {
-            switch (arr[0]) {
-                case "name": {
-                    this.name = arr[1];
-                    break;
-                }
-                case "set": {
-                    this.curBalance.put(arr[1], Integer.parseInt(arr[2]));
-                    break;
-                }
-                case "remove": {
-                    this.curBalance.remove(arr[1]);
-                    break;
-                }
-                }
-        }
+            if (curBalance.containsKey(nameCur.curCurrency)) {
+                Integer old_bal = this.curBalance.get(nameCur.curCurrency);
+                stUndo.push(() -> curBalance.put(nameCur.curCurrency, old_bal));
+            }
+             else stUndo.push(() -> this.curBalance.remove(nameCur));
 
+             this.curBalance.put(nameCur.curCurrency, bal);
+    }
+    public Account undo() {
+        stUndo.pop().run();
+        if (stUndo.isEmpty()) throw new IndexOutOfBoundsException("Нет изменений для отмены.");
+        return this;
     }
 
     @Override

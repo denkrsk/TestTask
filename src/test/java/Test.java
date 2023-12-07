@@ -43,7 +43,8 @@ public class Test {
         Account acc = new Account("Denis");
         String str = acc.getName();
         acc.setName("Vasia");
-        acc.undo();
+        acc = acc.undo();
+        System.out.println(acc);
         Assertions.assertTrue(acc.getName().equals(str));
 
     }
@@ -51,6 +52,7 @@ public class Test {
     @DisplayName("Проверка undo, если отменять нечего")
     public void  testUndoInc(){
         Account acc = new Account("Vasia");;
+        System.out.println(acc);
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> acc.undo());
     }
     @org.junit.jupiter.api.Test
