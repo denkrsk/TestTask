@@ -1,26 +1,32 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import ru.stepup.task.Account;
-import ru.stepup.task.Currency;
-import ru.stepup.task.Save;
+import ru.stepup.task.*;
 
-public class Test {
+public class TestAccount {
     @org.junit.jupiter.api.Test
     @DisplayName("Проверка имени на пустое значение")
+    @Test(1)
     public void  testName(){
         Account acc = new Account("Vasia");
         Assertions.assertTrue(!(acc.getName() == null | acc.getName().equals("")));
+        System.out.println("Hi");
     }
 
     @org.junit.jupiter.api.Test
     @DisplayName("Проверка имени на не корректные значение")
-    public void  testIncName(){
+    @BeforeSuite
+    @Test(3)
+    @CsvSource("srt")
+    public void  testIncName(String ss){
+        System.out.println(ss);
         Account acc;
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Account(""));
+        System.out.println("Before");
     }
 
     @org.junit.jupiter.api.Test
     @DisplayName("Проверка баланса валюты на корректные значение")
+    @Test(2)
     public void  testCurrenc(){
         Account acc = new Account("Vasia");;
         Currency currr = new Currency();
